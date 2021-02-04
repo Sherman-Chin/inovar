@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:inovar/blocs/FloorBloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inovar/models/floor.dart';
+import 'package:inovar/screens/floor/floor_card.dart';
 import 'package:inovar/services/events.dart';
 import 'package:inovar/services/states.dart';
 import 'package:panorama/panorama.dart';
@@ -20,6 +22,18 @@ class _FloorScreenState extends State<FloorScreen> {
     floorBloc = BlocProvider.of<FloorBloc>(context);
   }
 
+  Widget _getCards(List<Floor> floors) {
+    return Wrap(
+      children: floors.map((floor) {
+        return FloorCard(
+          floorName: floor.name,
+          floorDescription: floor.description,
+          imageName: floor.image,
+        );
+      }).toList(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final Widget title = Text('Samples');
@@ -29,19 +43,24 @@ class _FloorScreenState extends State<FloorScreen> {
     // );
 
     final Widget content = Center(
-      child: Column(
+      child: ListView(
         children: [
-          IconButton(
-            icon: Icon(Icons.message),
-            onPressed: () => floorBloc.add(DatabaseEvents.GetFloorSamples),
+          Column(
+            children: [
+              IconButton(
+                icon: Icon(Icons.message),
+                onPressed: () => floorBloc.add(DatabaseEvents.GetFloorSamples),
+              ),
+              BlocBuilder<FloorBloc, DatabaseState>(
+                  builder: (BuildContext context, DatabaseState state) {
+                if (state is DatabaseQueried) {
+                  return _getCards(state.floors);
+                } else {
+                  return Text('Loading');
+                }
+              })
+            ],
           ),
-          BlocBuilder<FloorBloc, DatabaseState>(builder: (BuildContext context, DatabaseState state) {
-            if (state is DatabaseQueried) {
-              return Text(state.floors[0].name);
-            } else {
-              return Text('Loading');
-            }
-          })
         ],
       ),
     );

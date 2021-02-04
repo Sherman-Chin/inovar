@@ -36,6 +36,9 @@ class FloorDatabase {
 
   void _initDatabase(Database db, int version) async {
     await db.transaction((txn) async {
+      await db.execute('DROP TABLE IF EXISTS FloorDetail');
+      await db.execute('DROP TABLE IF EXISTS FloorTags');
+      
       await db.execute('CREATE TABLE FloorDetail'
           '(id INTEGER PRIMARY KEY,'
           'name TEXT,'
@@ -50,15 +53,90 @@ class FloorDatabase {
   }
 
   Future<List<Floor>> getFloorWithId (int id) async {
-    Database db = await _database();
+    // Database db = await _database();
     //And then perform stuff on the db
     var result = await Future.delayed(const Duration(seconds: 1), () => List.of([Floor(
       id: 0,
       name: 'sample',
       description: 'testing',
+      image: 'assets/images/' + 'wooden-floor.jpg',
       categories: ['cat1', 'cat2'],
       tags: ['tag1', 'tag2']
-    )]));
+    ),
+      Floor(
+          id: 0,
+          name: 'sample',
+          description: 'testing',
+          image: 'assets/images/' + 'wooden-floor.jpg',
+          categories: ['cat1', 'cat2'],
+          tags: ['tag1', 'tag2']
+      ),
+      Floor(
+          id: 0,
+          name: 'sample',
+          description: 'testing',
+          image: 'assets/images/' + 'wooden-floor.jpg',
+          categories: ['cat1', 'cat2'],
+          tags: ['tag1', 'tag2']
+      ),
+      Floor(
+          id: 0,
+          name: 'sample',
+          description: 'testing',
+          image: 'assets/images/' + 'wooden-floor.jpg',
+          categories: ['cat1', 'cat2'],
+          tags: ['tag1', 'tag2']
+      ),
+      Floor(
+          id: 0,
+          name: 'sample',
+          description: 'testing',
+          image: 'assets/images/' + 'wooden-floor.jpg',
+          categories: ['cat1', 'cat2'],
+          tags: ['tag1', 'tag2']
+      ),
+      Floor(
+          id: 0,
+          name: 'sample',
+          description: 'testing',
+          image: 'assets/images/' + 'wooden-floor.jpg',
+          categories: ['cat1', 'cat2'],
+          tags: ['tag1', 'tag2']
+      ),
+      Floor(
+          id: 0,
+          name: 'sample',
+          description: 'testing',
+          image: 'assets/images/' + 'wooden-floor.jpg',
+          categories: ['cat1', 'cat2'],
+          tags: ['tag1', 'tag2']
+      ),
+      Floor(
+          id: 0,
+          name: 'sample',
+          description: 'testing',
+          image: 'assets/images/' + 'wooden-floor.jpg',
+          categories: ['cat1', 'cat2'],
+          tags: ['tag1', 'tag2']
+      ),
+      Floor(
+          id: 0,
+          name: 'sample',
+          description: 'testing',
+          image: 'assets/images/' + 'wooden-floor.jpg',
+          categories: ['cat1', 'cat2'],
+          tags: ['tag1', 'tag2']
+      ),
+
+      Floor(
+          id: 0,
+          name: 'sample',
+          description: 'testing',
+          image: 'assets/images/' + 'wooden-floor.jpg',
+          categories: ['cat1', 'cat2'],
+          tags: ['tag1', 'tag2']
+      ),
+    ]));
     return result;
   }
 }
