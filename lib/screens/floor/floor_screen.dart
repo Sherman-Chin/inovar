@@ -5,7 +5,6 @@ import 'package:inovar/models/floor.dart';
 import 'package:inovar/screens/floor/floor_card.dart';
 import 'package:inovar/services/events.dart';
 import 'package:inovar/services/states.dart';
-import 'package:panorama/panorama.dart';
 import 'package:inovar/components/root_scaffold.dart';
 
 class FloorScreen extends StatefulWidget {
@@ -23,12 +22,19 @@ class _FloorScreenState extends State<FloorScreen> {
   }
 
   Widget _getCards(List<Floor> floors) {
+    int numFloor = floors.length;
+    double diff = 1.0 / numFloor;
+    double begin = -diff;
+
+
     return Wrap(
       children: floors.map((floor) {
+        begin += diff;
+
         return FloorCard(
-          floorName: floor.name,
-          floorDescription: floor.description,
-          imageName: floor.image,
+          floor: floor,
+          begin: begin,
+          end: begin + diff,
         );
       }).toList(),
     );
@@ -37,10 +43,6 @@ class _FloorScreenState extends State<FloorScreen> {
   @override
   Widget build(BuildContext context) {
     final Widget title = Text('Samples');
-    // final Widget content = Panorama(
-    //   child: Image.asset('assets/images/pan.jpg'),
-    //   sensitivity: 1.5,
-    // );
 
     final Widget content = Center(
       child: ListView(

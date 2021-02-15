@@ -1,24 +1,51 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:inovar/models/floor.dart';
 
-class FloorCard extends StatelessWidget {
-  final String floorName;
-  final String floorDescription;
-  final String imageName;
+class FloorCard extends StatefulWidget {
+  final Floor floor;
+  final double begin;
+  final double end;
 
-  FloorCard({this.floorName, this.floorDescription, this.imageName});
+  FloorCard({@required this.floor, @required this.begin, @required this.end});
+
+  @override
+  _FloorCardState createState() => _FloorCardState();
+}
+
+class _FloorCardState extends State<FloorCard> with TickerProviderStateMixin{
+  AnimationController animationController;
+  Animation<double> _fadeIn;
+
+  @override
+  void dispose() {
+    super.dispose();
+    animationController.dispose();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    animationController = AnimationController(vsync: this, duration: Duration(seconds: 2));
+    _fadeIn = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: animationController, curve: Interval(widget.begin, widget.end, curve: Curves.linear)));
+    animationController.forward();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.symmetric(vertical: 30.0, horizontal: 20),
-      child: Stack(
-        children: [
-          FloorCardContent(
-            floorName: floorName,
-            floorDescription: floorDescription,
-          ),
-          FloorThumbnail(imageName: imageName),
-        ],
+    return FadeTransition(
+      opacity: _fadeIn,
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 30.0, horizontal: 20),
+        child: Stack(
+          children: [
+            FloorCardContent(
+              floorName: widget.floor.name,
+              floorDescription: widget.floor.description,
+            ),
+            FloorThumbnail(imageName: widget.floor.image),
+          ],
+        ),
       ),
     );
   }

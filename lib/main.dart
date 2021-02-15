@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inovar/blocs/FloorBloc.dart';
 import 'package:inovar/screens/floor/floor_screen.dart';
-import 'file:///C:/Users/Student/Desktop/New%20folder/inovar/lib/services/routes.dart';
 import 'package:inovar/screens/home/home_screen.dart';
 import 'package:inovar/services/floor_database.dart';
+import 'package:inovar/services/routes.dart';
 
 void main() {
   runApp(MyApp());
