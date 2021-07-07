@@ -3,9 +3,10 @@ import 'package:inovar/blocs/FloorBloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inovar/models/floor.dart';
 import 'package:inovar/screens/floor/floor_card.dart';
-import 'package:inovar/services/events.dart';
-import 'package:inovar/services/states.dart';
+import 'package:inovar/screens/floor/inherited_floor_provider.dart';
+import 'package:inovar/services/database_states.dart';
 import 'package:inovar/components/root_scaffold.dart';
+import 'package:inovar/screens/floor/search_section.dart';
 
 class FloorScreen extends StatefulWidget {
   @override
@@ -13,7 +14,7 @@ class FloorScreen extends StatefulWidget {
 }
 
 class _FloorScreenState extends State<FloorScreen> {
-  FloorBloc floorBloc;
+  Bloc floorBloc;
 
   @override
   void initState() {
@@ -26,17 +27,25 @@ class _FloorScreenState extends State<FloorScreen> {
     double diff = 1.0 / numFloor;
     double begin = -diff;
 
-
-    return Wrap(
-      children: floors.map((floor) {
-        begin += diff;
-
-        return FloorCard(
-          floor: floor,
-          begin: begin,
-          end: begin + diff,
-        );
-      }).toList(),
+    return Expanded(
+      child: ListView(children: [
+        Container(
+          alignment: Alignment.center,
+          child: Wrap(
+            // alignment: (screenSize.width <= 700.0) ? WrapAlignment.center: WrapAlignment.start,
+            children: floors.map((floor) {
+              begin += diff;
+              return InheritedFloor(
+                child: FloorCard(
+                  begin: begin,
+                  end: begin + diff,
+                ),
+                floor: floor,
+              );
+            }).toList(),
+          ),
+        ),
+      ]),
     );
   }
 
@@ -45,26 +54,17 @@ class _FloorScreenState extends State<FloorScreen> {
     final Widget title = Text('Samples');
 
     final Widget content = Center(
-      child: ListView(
-        children: [
-          Column(
-            children: [
-              IconButton(
-                icon: Icon(Icons.message),
-                onPressed: () => floorBloc.add(DatabaseEvents.GetFloorSamples),
-              ),
-              BlocBuilder<FloorBloc, DatabaseState>(
-                  builder: (BuildContext context, DatabaseState state) {
-                if (state is DatabaseQueried) {
-                  return _getCards(state.floors);
-                } else {
-                  return Text('Loading');
-                }
-              })
-            ],
-          ),
-        ],
-      ),
+      child: Row(children: [
+        SearchSection(),
+        BlocBuilder<FloorBloc, DatabaseState>(
+            builder: (BuildContext context, DatabaseState state) {
+          if (state is DatabaseQueried) {
+            return _getCards(state.floors);
+          } else {
+            return Text('Loading');
+          }
+        }),
+      ]),
     );
 
     return RootScaffold(title, content);

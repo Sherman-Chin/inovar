@@ -5,7 +5,13 @@ import 'package:inovar/components/root_scaffold.dart';
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final Widget title = Row(children: [Text('Inovar-logo'), Text('Inovar')]);
+    final Widget title = Row(
+        children: [
+          Container(
+              margin: EdgeInsets.fromLTRB(0.0, 0.0, 5.0, 0.0),
+              child: Icon(Icons.store)),
+          Text('Inovar')
+        ]);
 
     final Widget content = Row(
       children: [

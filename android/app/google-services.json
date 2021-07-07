@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "996569422383",
+    "project_id": "inovar-kk-60516",
+    "storage_bucket": "inovar-kk-60516.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:996569422383:android:ef8bcae59f1c7cc99a44da",
+        "android_client_info": {
+          "package_name": "com.example.inovar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "996569422383-k3eqo1usq09u440iub5ooi7vgplo3cf6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBmYNTzY38vrxtE93grZtakNmuCgjdeLhM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "996569422383-k3eqo1usq09u440iub5ooi7vgplo3cf6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

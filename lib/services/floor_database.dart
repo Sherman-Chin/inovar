@@ -1,142 +1,37 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:inovar/models/floor.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
-import 'dart:io';
 import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class FloorDatabase {
-  static FloorDatabase floorDb;
+class FloorRepository {
+  final _loadedData = StreamController<List<Floor>>();
+  final _cache = List<Floor>();
 
-  Completer<Database> _completer;
+  FloorRepository() {
+    getFloors();
+  }
 
-  FloorDatabase._internal();
+  void dispose() {
+    _loadedData.close();
+  }
 
-  static FloorDatabase getInstance() {
-    if (floorDb == null) {
-      floorDb = FloorDatabase._internal();
+  void getFloors() async {
+    await Firebase.initializeApp();
+    if (FirebaseFirestore.instance != null) {
+
+      FirebaseFirestore.instance
+          .collection('floor')
+          .snapshots()
+          .listen((data) {
+        _cache.clear();
+        data.docs.forEach((floor) {
+          final doc = floor.data();
+          _cache.add(Floor.fromMap(doc));
+        });
+        _loadedData.add(_cache);
+      });
     }
-    return floorDb;
   }
 
-  Future<Database> _database() {
-    if (_completer == null) {
-      _completer = Completer();
-      _openDatabase();
-    }
-    return _completer.future;
-  }
-
-  Future _openDatabase() async {
-    Directory databasePath = await getApplicationDocumentsDirectory();
-    String dbPath = join(databasePath.path, 'floor_detail.db');
-    Database db = await openDatabase(dbPath, version: 1, onCreate: _initDatabase);
-    _completer.complete(db);
-  }
-
-  void _initDatabase(Database db, int version) async {
-    await db.transaction((txn) async {
-      await db.execute('DROP TABLE IF EXISTS FloorDetail');
-      await db.execute('DROP TABLE IF EXISTS FloorTags');
-      
-      await db.execute('CREATE TABLE FloorDetail'
-          '(id INTEGER PRIMARY KEY,'
-          'name TEXT,'
-          'description TEXT)'
-      );
-
-      await db.execute('CREATE TABLE FloorTags'
-          '(tag TEXT PRIMARY KEY,'
-          'floor_id INTEGER)'
-      );
-    });
-  }
-
-  Future<List<Floor>> getFloorWithId (int id) async {
-    // Database db = await _database();
-    //And then perform stuff on the db
-    var result = await Future.delayed(const Duration(seconds: 1), () => List.of([Floor(
-      id: 0,
-      name: 'sample',
-      description: 'testing',
-      image: 'assets/images/' + 'wooden-floor.jpg',
-      categories: ['cat1', 'cat2'],
-      tags: ['tag1', 'tag2']
-    ),
-      Floor(
-          id: 0,
-          name: 'sample',
-          description: 'testing',
-          image: 'assets/images/' + 'wooden-floor.jpg',
-          categories: ['cat1', 'cat2'],
-          tags: ['tag1', 'tag2']
-      ),
-      Floor(
-          id: 0,
-          name: 'sample',
-          description: 'testing',
-          image: 'assets/images/' + 'wooden-floor.jpg',
-          categories: ['cat1', 'cat2'],
-          tags: ['tag1', 'tag2']
-      ),
-      Floor(
-          id: 0,
-          name: 'sample',
-          description: 'testing',
-          image: 'assets/images/' + 'wooden-floor.jpg',
-          categories: ['cat1', 'cat2'],
-          tags: ['tag1', 'tag2']
-      ),
-      Floor(
-          id: 0,
-          name: 'sample',
-          description: 'testing',
-          image: 'assets/images/' + 'wooden-floor.jpg',
-          categories: ['cat1', 'cat2'],
-          tags: ['tag1', 'tag2']
-      ),
-      Floor(
-          id: 0,
-          name: 'sample',
-          description: 'testing',
-          image: 'assets/images/' + 'wooden-floor.jpg',
-          categories: ['cat1', 'cat2'],
-          tags: ['tag1', 'tag2']
-      ),
-      Floor(
-          id: 0,
-          name: 'sample',
-          description: 'testing',
-          image: 'assets/images/' + 'wooden-floor.jpg',
-          categories: ['cat1', 'cat2'],
-          tags: ['tag1', 'tag2']
-      ),
-      Floor(
-          id: 0,
-          name: 'sample',
-          description: 'testing',
-          image: 'assets/images/' + 'wooden-floor.jpg',
-          categories: ['cat1', 'cat2'],
-          tags: ['tag1', 'tag2']
-      ),
-      Floor(
-          id: 0,
-          name: 'sample',
-          description: 'testing',
-          image: 'assets/images/' + 'wooden-floor.jpg',
-          categories: ['cat1', 'cat2'],
-          tags: ['tag1', 'tag2']
-      ),
-
-      Floor(
-          id: 0,
-          name: 'sample',
-          description: 'testing',
-          image: 'assets/images/' + 'wooden-floor.jpg',
-          categories: ['cat1', 'cat2'],
-          tags: ['tag1', 'tag2']
-      ),
-    ]));
-    return result;
-  }
+  Stream<List<Floor>> floors() => _loadedData.stream;
 }

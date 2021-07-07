@@ -1,19 +1,21 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inovar/blocs/FloorBloc.dart';
 import 'package:inovar/models/floor.dart';
+import 'package:inovar/screens/floor/floor_detail_popup.dart';
+import 'package:inovar/screens/floor/inherited_floor_provider.dart';
 
 class FloorCard extends StatefulWidget {
-  final Floor floor;
   final double begin;
   final double end;
 
-  FloorCard({@required this.floor, @required this.begin, @required this.end});
+  FloorCard({@required this.begin, @required this.end});
 
   @override
   _FloorCardState createState() => _FloorCardState();
 }
 
-class _FloorCardState extends State<FloorCard> with TickerProviderStateMixin{
+class _FloorCardState extends State<FloorCard> with TickerProviderStateMixin {
   AnimationController animationController;
   Animation<double> _fadeIn;
 
@@ -26,24 +28,25 @@ class _FloorCardState extends State<FloorCard> with TickerProviderStateMixin{
   @override
   void initState() {
     super.initState();
-    animationController = AnimationController(vsync: this, duration: Duration(seconds: 2));
-    _fadeIn = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(parent: animationController, curve: Interval(widget.begin, widget.end, curve: Curves.linear)));
+    animationController =
+        AnimationController(vsync: this, duration: Duration(seconds: 1));
+    _fadeIn = Tween<double>(begin: 0.0, end: 1.0).animate(CurvedAnimation(
+        parent: animationController,
+        curve: Interval(widget.begin, widget.end, curve: Curves.linear)));
     animationController.forward();
   }
 
   @override
   Widget build(BuildContext context) {
+
     return FadeTransition(
       opacity: _fadeIn,
       child: Container(
         margin: EdgeInsets.symmetric(vertical: 30.0, horizontal: 20),
         child: Stack(
           children: [
-            FloorCardContent(
-              floorName: widget.floor.name,
-              floorDescription: widget.floor.description,
-            ),
-            FloorThumbnail(imageName: widget.floor.image),
+            FloorCardContent(),
+            FloorThumbnail(),
           ],
         ),
       ),
@@ -52,47 +55,75 @@ class _FloorCardState extends State<FloorCard> with TickerProviderStateMixin{
 }
 
 class FloorThumbnail extends StatelessWidget {
-  final String imageName;
+  // ignore: close_sinks
+  FloorBloc floorBloc;
 
-  FloorThumbnail({this.imageName});
+  FloorThumbnail();
 
   @override
   Widget build(BuildContext context) {
+    floorBloc = BlocProvider.of<FloorBloc>(context);
+    Floor floor = InheritedFloor.of(context).floor;
     return Container(
-      decoration: BoxDecoration(boxShadow: [
-        BoxShadow(
-          color: Colors.black12,
-          blurRadius: 10.0,
-          offset: Offset(-5.0, 0.0),
-        ),
-      ],
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 10.0,
+            offset: Offset(-5.0, 0.0),
+          ),
+        ],
         shape: BoxShape.circle,
       ),
       margin: EdgeInsets.symmetric(vertical: 10),
-        child: CircleAvatar(
-          backgroundImage: AssetImage(imageName),
-          radius: 50,
-          child: InkWell(
-            onTap: () => {},
-            borderRadius: BorderRadius.circular(50.0),
-          ),
+      child: CircleAvatar(
+        backgroundImage: AssetImage(floor.profileImage),
+        radius: 50,
+        child: InkWell(
+          onTap: () => {
+            showDialog(
+                context: context,
+                builder: (BuildContext context) =>
+                    BlocProvider<FloorBloc>.value(
+                      value: floorBloc,
+                      child: InheritedFloor(
+                        floor: floor,
+                        child: FloorPopup(),
+                      ),
+                    ))
+          },
+          borderRadius: BorderRadius.circular(50.0),
         ),
+      ),
     );
   }
 }
 
 class FloorCardContent extends StatelessWidget {
-  final String floorName;
-  final String floorDescription;
+  // ignore: close_sinks
+  FloorBloc floorBloc;
 
-  FloorCardContent({this.floorName, this.floorDescription});
+  FloorCardContent();
 
   @override
   Widget build(BuildContext context) {
+    floorBloc = BlocProvider.of<FloorBloc>(context);
+    Floor floor = InheritedFloor.of(context).floor;
+
     return InkWell(
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
-      onTap: () => {},
+      onTap: () => {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) => BlocProvider<FloorBloc>.value(
+                  value: floorBloc,
+                  child: InheritedFloor(
+                    floor: floor,
+                    child: FloorPopup(),
+                  ),
+                ))
+      },
       child: Container(
         margin: EdgeInsets.only(left: 50.0),
         width: 250,
@@ -114,11 +145,11 @@ class FloorCardContent extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                floorName,
+                floor.name,
                 style: Theme.of(context).textTheme.headline4,
               ),
               Text(
-                floorDescription,
+                floor.code,
                 style: Theme.of(context).textTheme.subtitle2,
               )
             ],
