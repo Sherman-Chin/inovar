@@ -19,13 +19,16 @@ class MyApp extends StatelessWidget {
         HomeRoute().toString(): (context) => HomeScreen(),
         FloorsRoute().toString(): (context) => BlocProvider(
               create: (context) =>
-                  FloorBloc(floorDatabase: FloorDatabase.getInstance()),
+                  FloorBloc(floorDatabase: FloorRepository()),
               child: FloorScreen(),
             ),
       },
       title: 'Inovar',
       theme: ThemeData(
         primarySwatch: Colors.teal,
+        textTheme: TextTheme(
+          headline3: TextStyle(color: Color(0xFFA45F66)),
+        ),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
     );

@@ -1,29 +1,27 @@
 import 'dart:convert';
-class Floor {
-  int id;
-  String name;
-  String description;
-  String image;
-  var tags;
-  var categories;
 
-  Floor({this.id, this.name, this.description, this.image, this.tags, this.categories});
+class Floor {
+  String code;
+  String name;
+  String profileImage;
+  List<String> panoramicImages;
+  String category;
+
+  Floor({this.code, this.name, this.profileImage, this.panoramicImages, this.category});
 
   factory Floor.fromMap(Map<String, dynamic> json) => Floor(
-    id: json["id"],
+    code: json["code"],
     name: json["name"],
-    description: json["description"],
-    image: json["image"],
-    tags: json["tags"],
-    categories: json["categories"],
+    profileImage: json["profileImage"],
+    panoramicImages: json["panoramicImages"].cast<String>(),
+    category: json["category"],
   );
 
   Map<String, dynamic> toMap() => {
-    "id": id,
+    "id": code,
     "name": name,
-    "description": description,
-    "image": image,
-    "tags": tags,
-    "categories": categories,
+    "profileImage": profileImage,
+    "panoramicImages": panoramicImages,
+    "category": category,
   };
 }
