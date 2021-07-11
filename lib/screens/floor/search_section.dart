@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:inovar/blocs/FloorBloc.dart';
+import 'package:inovar/blocs/CategoryBloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:inovar/models/category.dart';
+import 'package:inovar/services/database_events.dart';
+import 'package:inovar/services/database_states.dart';
 
 class SearchSection extends StatefulWidget {
   @override
@@ -9,13 +12,21 @@ class SearchSection extends StatefulWidget {
 
 class _SearchSectionState extends State<SearchSection> {
   final TextEditingController _controller = TextEditingController();
-  Bloc floorBloc;
+  Bloc categoryBloc;
   List<bool> _isOpen = [false, false];
 
   @override
   void initState() {
     super.initState();
-    floorBloc = BlocProvider.of<FloorBloc>(context);
+
+    categoryBloc = BlocProvider.of<CategoryBloc>(context);
+    categoryBloc.add(RequestCategoryData());
+  }
+
+  @override
+  void dispose() {
+    categoryBloc.close();
+    super.dispose();
   }
 
   void _updateList(i) {
@@ -65,7 +76,15 @@ class _SearchSectionState extends State<SearchSection> {
                           )),
                     );
                   },
-                  body: CategoryList(),
+                  body: BlocBuilder<CategoryBloc, DatabaseState>(
+                    builder: (BuildContext context, DatabaseState state) {
+                      if (state is DatabaseCategoryDataQueried) {
+                        return CategoryList(categories: state.categories,);
+                      } else {
+                        return Text('Loading');
+                      }
+                    },
+                  ),
                   isExpanded: _isOpen[0]),
               ExpansionPanel(
                   headerBuilder: (context, isOpen) {
@@ -92,28 +111,27 @@ class _SearchSectionState extends State<SearchSection> {
 }
 
 class CategoryList extends StatefulWidget {
+  final List<Category> categories;
+
+  CategoryList({@required this.categories});
+
   @override
   _CategoryListState createState() => _CategoryListState();
 }
 
 class _CategoryListState extends State<CategoryList> {
-  bool _value = false;
-
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(left: 5.0),
       child: Column(
-        children: [
-          CheckboxListTile(
-              value: _value,
-              title: Text('Category 1'),
-              onChanged: (value) => setState(() => {
-                _value = value
-              }),
-          )
-        ],
-      ),
+          children: widget.categories.map((category) {
+        return CheckboxListTile(
+            value: category.selected,
+            title: Text(category.name),
+            onChanged: (value) => setState(() => {category.selected = value}));
+      }).toList()
+          ),
     );
   }
 }

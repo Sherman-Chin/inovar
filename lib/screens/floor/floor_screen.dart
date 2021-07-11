@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:inovar/blocs/CategoryBloc.dart';
 import 'package:inovar/blocs/FloorBloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:inovar/models/floor.dart';
 import 'package:inovar/screens/floor/floor_card.dart';
 import 'package:inovar/screens/floor/inherited_floor_provider.dart';
+import 'package:inovar/services/database_events.dart';
 import 'package:inovar/services/database_states.dart';
 import 'package:inovar/components/root_scaffold.dart';
 import 'package:inovar/screens/floor/search_section.dart';
@@ -20,6 +22,13 @@ class _FloorScreenState extends State<FloorScreen> {
   void initState() {
     super.initState();
     floorBloc = BlocProvider.of<FloorBloc>(context);
+    floorBloc.add(RequestFloorData(categories: null));
+  }
+
+  @override
+  void dispose() {
+    floorBloc.close();
+    super.dispose();
   }
 
   Widget _getCards(List<Floor> floors) {
@@ -32,7 +41,6 @@ class _FloorScreenState extends State<FloorScreen> {
         Container(
           alignment: Alignment.center,
           child: Wrap(
-            // alignment: (screenSize.width <= 700.0) ? WrapAlignment.center: WrapAlignment.start,
             children: floors.map((floor) {
               begin += diff;
               return InheritedFloor(
@@ -58,7 +66,7 @@ class _FloorScreenState extends State<FloorScreen> {
         SearchSection(),
         BlocBuilder<FloorBloc, DatabaseState>(
             builder: (BuildContext context, DatabaseState state) {
-          if (state is DatabaseQueried) {
+          if (state is DatabaseFloorDataQueried) {
             return _getCards(state.floors);
           } else {
             return Text('Loading');
